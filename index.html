@@ -1,65 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chat App with Online Status</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chat App with Status</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="flex items-center justify-center min-h-screen bg-gray-100">
-  <!-- Auth Page -->
+
+  <!-- AUTH PAGES -->
   <div id="auth-page" class="text-center">
-    <h1 class="text-2xl font-bold mb-4">Welcome</h1>
-    <button id="goToLogin" class="px-4 py-2 bg-blue-500 text-white rounded m-2">Login</button>
-    <button id="goToRegister" class="px-4 py-2 bg-green-500 text-white rounded m-2">Register</button>
+    <h1 class="text-2xl font-bold">Welcome</h1>
+    <button id="goToLogin" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded">Login</button>
+    <button id="goToRegister" class="mt-4 px-4 py-2 bg-green-500 text-white rounded">Register</button>
   </div>
 
-  <!-- Register Page -->
+  <!-- REGISTER -->
   <div id="register-page" class="hidden text-center">
-    <h1 class="text-2xl font-bold mb-4">Register</h1>
-    <input id="registerEmail" type="email" placeholder="Email" class="border p-2 mt-2 w-64"><br>
-    <input id="registerPassword" type="password" placeholder="Password" class="border p-2 mt-2 w-64"><br>
-    <button id="registerBtn" class="mt-4 px-4 py-2 bg-green-500 text-white rounded w-64">Register</button><br>
-    <button id="backToAuthFromRegister" class="mt-2 px-4 py-2 text-blue-500">Back</button>
+    <h1 class="text-2xl font-bold">Register</h1>
+    <input id="registerEmail" type="email" placeholder="Email" class="border p-2 mt-2 block mx-auto">
+    <input id="registerPassword" type="password" placeholder="Password" class="border p-2 mt-2 block mx-auto">
+    <button id="registerBtn" class="mt-4 px-4 py-2 bg-green-500 text-white rounded">Register</button>
   </div>
 
-  <!-- Login Page -->
+  <!-- LOGIN -->
   <div id="login-page" class="hidden text-center">
-    <h1 class="text-2xl font-bold mb-4">Login</h1>
-    <input id="loginEmail" type="email" placeholder="Email" class="border p-2 mt-2 w-64"><br>
-    <input id="loginPassword" type="password" placeholder="Password" class="border p-2 mt-2 w-64"><br>
-    <button id="loginBtn" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded w-64">Login</button><br>
-    <button id="backToAuthFromLogin" class="mt-2 px-4 py-2 text-blue-500">Back</button>
+    <h1 class="text-2xl font-bold">Login</h1>
+    <input id="loginEmail" type="email" placeholder="Email" class="border p-2 mt-2 block mx-auto">
+    <input id="loginPassword" type="password" placeholder="Password" class="border p-2 mt-2 block mx-auto">
+    <button id="loginBtn" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded">Login</button>
   </div>
 
-  <!-- Chat Page -->
-  <div id="chat-page" class="hidden w-[400px] bg-white p-4 shadow-lg rounded">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="font-bold text-xl">Chat Room</h2>
-      <button id="logoutBtn" class="px-3 py-1 bg-red-500 text-white rounded">Logout</button>
-    </div>
-    
-    <!-- Online/Offline Users -->
-    <div class="border rounded p-2 mb-4">
-      <h3 class="font-semibold mb-2">Users</h3>
-      <div id="userList" class="space-y-1 text-sm"></div>
+  <!-- CHAT PAGE -->
+  <div id="chat-page" class="hidden w-[400px] bg-white p-4 shadow-lg rounded flex flex-col">
+    <div class="flex justify-between mb-2">
+      <div>
+        <p class="font-bold" id="currentUserEmail">You</p>
+      </div>
+      <div>
+        <button id="logoutBtn" class="px-4 py-1 bg-red-500 text-white rounded">Logout</button>
+      </div>
     </div>
 
-    <!-- Messages -->
-    <div id="messages" class="h-64 overflow-y-auto p-2 border rounded mb-4 bg-gray-50"></div>
+    <h2 class="text-center text-lg font-semibold mb-2">Online Users</h2>
+    <div id="onlineUsers" class="flex flex-wrap gap-2 p-2 border rounded h-16 overflow-x-auto"></div>
 
-    <!-- Send Message -->
-    <div class="flex gap-2">
-      <input id="messageInput" type="text" class="flex-1 border p-2 rounded" placeholder="Type a message...">
+    <div id="messages" class="flex-1 overflow-y-auto p-2 border mt-2 mb-2 h-64"></div>
+
+    <div class="flex space-x-2">
+      <input id="messageInput" type="text" placeholder="Type a message..." class="flex-1 border p-2 rounded" />
       <button id="sendBtn" class="px-4 py-2 bg-green-500 text-white rounded">Send</button>
     </div>
   </div>
 
-  <!-- Firebase Code -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-    import { getDatabase, ref, push, onChildAdded, onValue, remove, update, onDisconnect, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+    import { getDatabase, ref, push, onChildAdded, onValue, remove, update, onDisconnect, serverTimestamp, set } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCp3RanzzQ2lGf8HQ-XaGe_W1cuxZe0GVc",
@@ -68,6 +65,7 @@
       storageBucket: "authentication-a95dc.appspot.com",
       messagingSenderId: "263589613044",
       appId: "1:263589613044:web:4df90594ae765365a3bda1",
+      measurementId: "G-21NE0GLRVY",
       databaseURL: "https://authentication-a95dc-default-rtdb.firebaseio.com/"
     };
 
@@ -75,159 +73,150 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // DOM Elements
+    let currentUser = null;
+
+    // DOM ELEMENTS
     const authPage = document.getElementById("auth-page");
     const loginPage = document.getElementById("login-page");
     const registerPage = document.getElementById("register-page");
     const chatPage = document.getElementById("chat-page");
+
     const messagesContainer = document.getElementById("messages");
-    const userListContainer = document.getElementById("userList");
+    const onlineUsersContainer = document.getElementById("onlineUsers");
+    const messageInput = document.getElementById("messageInput");
 
-    const sendBtn = document.getElementById("sendBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
-
-    let user;
-
-    // Navigation
-    document.getElementById("goToLogin").onclick = () => { authPage.classList.add("hidden"); loginPage.classList.remove("hidden"); };
-    document.getElementById("goToRegister").onclick = () => { authPage.classList.add("hidden"); registerPage.classList.remove("hidden"); };
-    document.getElementById("backToAuthFromLogin").onclick = () => { loginPage.classList.add("hidden"); authPage.classList.remove("hidden"); };
-    document.getElementById("backToAuthFromRegister").onclick = () => { registerPage.classList.add("hidden"); authPage.classList.remove("hidden"); };
-
-    // Register
-    document.getElementById("registerBtn").onclick = () => {
-      const email = document.getElementById("registerEmail").value;
-      const password = document.getElementById("registerPassword").value;
-      createUserWithEmailAndPassword(auth, email, password)
-        .then(() => { registerPage.classList.add("hidden"); loginPage.classList.remove("hidden"); })
-        .catch(err => alert(err.message));
-    };
-
-    // Login
-    document.getElementById("loginBtn").onclick = () => {
-      const email = document.getElementById("loginEmail").value;
-      const password = document.getElementById("loginPassword").value;
-      signInWithEmailAndPassword(auth, email, password)
-        .then((result) => {
-          user = result.user;
-          loginPage.classList.add("hidden");
-          chatPage.classList.remove("hidden");
-          updateOnlineStatus(user.uid, user.email, "online");
-        })
-        .catch(err => alert(err.message));
-    };
-
-    // Logout
-    logoutBtn.onclick = () => {
-      if (!user) return;
-      const userRef = ref(db, `users/${user.uid}`);
-      update(userRef, { status: "offline" }).then(() => {
-        signOut(auth).then(() => {
-          chatPage.classList.add("hidden");
-          authPage.classList.remove("hidden");
-        });
-      });
-    };
-
-    // Send Message
-    sendBtn.onclick = () => {
-      const messageInput = document.getElementById("messageInput");
-      const message = messageInput.value.trim();
-      if (!message) return;
-      push(ref(db, "messages"), {
-        name: user.email,
-        text: message,
-        uid: user.uid,
-        timestamp: Date.now()
-      });
-      messageInput.value = "";
-    };
-
-    // Realtime Messages
-    onChildAdded(ref(db, "messages"), (snapshot) => {
-      const msg = snapshot.val();
-      const msgId = snapshot.key;
-
-      const msgElement = document.createElement("div");
-      msgElement.className = "p-2 border rounded mb-2 bg-white shadow text-sm flex justify-between items-center";
-
-      const time = new Date(msg.timestamp).toLocaleTimeString();
-
-      msgElement.innerHTML = `
-        <div>
-          <strong>${msg.name}</strong><br>
-          <span>${msg.text}</span><br>
-          <small class="text-gray-500">${time}</small>
-        </div>
-        ${msg.uid === (user ? user.uid : null)
-          ? `<div class="flex gap-1">
-              <button class="text-xs text-blue-500 editBtn">Edit</button>
-              <button class="text-xs text-red-500 deleteBtn">Delete</button>
-            </div>` : ""}
-      `;
-
-      // Edit button
-      const editBtn = msgElement.querySelector(".editBtn");
-      if (editBtn) {
-        editBtn.onclick = () => {
-          const newText = prompt("Edit message:", msg.text);
-          if (newText) {
-            update(ref(db, `messages/${msgId}`), { text: newText });
-          }
-        };
-      }
-
-      // Delete button
-      const deleteBtn = msgElement.querySelector(".deleteBtn");
-      if (deleteBtn) {
-        deleteBtn.onclick = () => {
-          if (confirm("Delete this message?")) {
-            remove(ref(db, `messages/${msgId}`));
-          }
-        };
-      }
-
-      messagesContainer.appendChild(msgElement);
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    });
-
-    // Realtime Users List (Online/Offline)
-    onValue(ref(db, "users"), (snapshot) => {
-      const users = snapshot.val();
-      userListContainer.innerHTML = "";
-
-      for (const uid in users) {
-        const userInfo = users[uid];
-        const userItem = document.createElement("div");
-        userItem.className = "flex justify-between items-center border p-1 rounded";
-
-        userItem.innerHTML = `
-          <span>${userInfo.email}</span>
-          <span class="${userInfo.status === 'online' ? 'text-green-500' : 'text-gray-400'}">${userInfo.status}</span>
-        `;
-
-        userListContainer.appendChild(userItem);
-      }
-    });
-
-    // Presence Management
     const updateOnlineStatus = (uid, email, status) => {
       const userRef = ref(db, `users/${uid}`);
       set(userRef, { email, status });
       onDisconnect(userRef).update({ status: "offline" });
     };
 
-    // Keep track of auth state (to auto show chat page)
-    onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        user = currentUser;
+    // NAVIGATION
+    document.getElementById("goToLogin").addEventListener("click", () => {
+      authPage.classList.add("hidden");
+      loginPage.classList.remove("hidden");
+    });
+
+    document.getElementById("goToRegister").addEventListener("click", () => {
+      authPage.classList.add("hidden");
+      registerPage.classList.remove("hidden");
+    });
+
+    // REGISTER
+    document.getElementById("registerBtn").addEventListener("click", () => {
+      const email = document.getElementById("registerEmail").value;
+      const password = document.getElementById("registerPassword").value;
+      createUserWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          alert("Registration successful!");
+          registerPage.classList.add("hidden");
+          loginPage.classList.remove("hidden");
+        })
+        .catch(error => alert(error.message));
+    });
+
+    // LOGIN
+    document.getElementById("loginBtn").addEventListener("click", () => {
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+      signInWithEmailAndPassword(auth, email, password)
+        .then((result) => {
+          currentUser = result.user;
+          updateOnlineStatus(currentUser.uid, currentUser.email, "online");
+          authPage.classList.add("hidden");
+          loginPage.classList.add("hidden");
+          chatPage.classList.remove("hidden");
+          document.getElementById("currentUserEmail").innerText = currentUser.email;
+          listenForOnlineUsers();
+        })
+        .catch(error => alert(error.message));
+    });
+
+    // LOGOUT
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      updateOnlineStatus(currentUser.uid, currentUser.email, "offline");
+      signOut(auth).then(() => {
+        chatPage.classList.add("hidden");
+        authPage.classList.remove("hidden");
+      });
+    });
+
+    // SEND MESSAGE
+    document.getElementById("sendBtn").addEventListener("click", () => {
+      const messageText = messageInput.value.trim();
+      if (!messageText) return;
+
+      const messageRef = push(ref(db, "messages"));
+      set(messageRef, {
+        uid: currentUser.uid,
+        name: currentUser.email,
+        text: messageText,
+        timestamp: Date.now()
+      });
+
+      messageInput.value = "";
+    });
+
+    // DISPLAY MESSAGES
+    onChildAdded(ref(db, "messages"), (snapshot) => {
+      const msg = snapshot.val();
+      const key = snapshot.key;
+      const isOwn = currentUser && msg.uid === currentUser.uid;
+
+      const messageDiv = document.createElement("div");
+      messageDiv.className = `p-2 mb-2 rounded ${isOwn ? 'bg-green-100 text-right' : 'bg-gray-200 text-left'}`;
+
+      const time = new Date(msg.timestamp).toLocaleTimeString();
+
+      messageDiv.innerHTML = `
+        <p class="text-sm font-semibold">${msg.name}</p>
+        <p>${msg.text}</p>
+        <div class="flex justify-between text-xs mt-1">
+          <span>${time}</span>
+          ${isOwn ? `<button onclick="deleteMessage('${key}')">🗑️</button>` : ''}
+        </div>
+      `;
+
+      messagesContainer.appendChild(messageDiv);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    });
+
+    // DELETE MESSAGE (ONLY OWN)
+    window.deleteMessage = (key) => {
+      const messageRef = ref(db, `messages/${key}`);
+      remove(messageRef);
+    };
+
+    // LISTEN ONLINE USERS
+    const listenForOnlineUsers = () => {
+      onValue(ref(db, 'users'), (snapshot) => {
+        const users = snapshot.val();
+        onlineUsersContainer.innerHTML = "";
+
+        for (let uid in users) {
+          const user = users[uid];
+          const userDiv = document.createElement("div");
+          userDiv.className = `px-2 py-1 rounded ${user.status === "online" ? "bg-green-300" : "bg-red-300"}`;
+          userDiv.innerText = user.email + ` (${user.status})`;
+          onlineUsersContainer.appendChild(userDiv);
+        }
+      });
+    };
+
+    // CHECK USER STATE
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+        updateOnlineStatus(currentUser.uid, currentUser.email, "online");
         authPage.classList.add("hidden");
         loginPage.classList.add("hidden");
-        registerPage.classList.add("hidden");
         chatPage.classList.remove("hidden");
-        updateOnlineStatus(user.uid, user.email, "online");
+        document.getElementById("currentUserEmail").innerText = currentUser.email;
+        listenForOnlineUsers();
       }
     });
+
   </script>
+
 </body>
 </html>
